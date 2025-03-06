@@ -1,48 +1,83 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct node{
+// Define a Node structure
+struct node {
     int data;
-    struct node* link;
+    struct node* next;
 };
 
-struct node* crlist(int a){
-    struct node* head = NULL,
-    *temp = NULL,
-    *newNode;
+// Function to create a linked list with 'n' nodes
+struct node* createLinkedList(int n) {
+    struct node *head = NULL, *temp = NULL, *newNode;
+    
+    for (int i = 0; i < n; i++) {
+        // Allocate memory for a new node
+        newNode = (struct node*) malloc(sizeof(struct node));
+        if (newNode == NULL) {
+            printf("Memory allocation failed!\n");
+            return NULL;
+        }
 
-    for(int i=0; i<a; i++){
-        newNode = (struct node*)malloc(sizeof(struct node));
-        printf("Enter data: ");
+        // Take user input for node data
+        printf("Enter data for node %d: ", i + 1);
         scanf("%d", &newNode->data);
-        newNode -> link = NULL;
-    }
+        newNode->next = NULL;
 
-    if (head == NULL){
-        head=newNode;
-        temp = head;
-    }else{
-        temp->link = newNode;
-        temp = newNode;
+        // If it's the first node, set it as head
+        if (head == NULL) {
+            head = newNode;
+            temp = head;
+        } else {
+            temp->next = newNode; // Link previous node to new node
+            temp = newNode;       // Move temp to the new node
+        }
     }
+    return head;
 }
 
-void displaylist(struct node* head){
-    struct node* temp=head;
-    printf("List: ");
-    while(temp != NULL){
+// Function to display the linked list
+void displayLinkedList(struct node* head) {
+    struct node* temp = head;
+    printf("Linked List: ");
+    while (temp != NULL) {
         printf("%d -> ", temp->data);
-        temp = temp->link;
+        temp = temp->next;
     }
     printf("NULL\n");
 }
 
-int main(){
+// Function to free allocated memory
+void freeLinkedList(struct node* head) {
+    struct node* temp;
+    while (head != NULL) {
+        temp = head;
+        head = head->next;
+        free(temp);
+    }
+}
+
+// Main function
+int main() {
     int n;
+    
+    // User input for number of nodes
     printf("Enter the number of nodes: ");
     scanf("%d", &n);
 
-    struct node* head= crlist(n);
-    displaylist(head);
+    if (n <= 0) {
+        printf("Invalid number of nodes!\n");
+        return 1;
+    }
+
+    // Create the linked list
+    struct node* head = createLinkedList(n);
+
+    // Display the linked list
+    displayLinkedList(head);
+
+    // Free allocated memory
+    freeLinkedList(head);
+
     return 0;
 }
