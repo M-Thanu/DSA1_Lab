@@ -60,10 +60,10 @@ int main(){
 
     temp=head;
     while(temp!=NULL){
-        if(head->data < min){
+        if(temp->data < min){
             min=temp->data;
         }
-        if(head->data > max){
+        if(temp->data > max){
             max=temp->data;
         }
         temp=temp->next;
