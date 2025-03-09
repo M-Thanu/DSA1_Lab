@@ -55,11 +55,54 @@ int main(){
 
     //Question 02 (ii)
     printf("\n");
-    head=head->link;
+    
+    if(head != NULL){
+        temp=head;
+
+        while(temp->link != head){
+            temp = temp->link;
+        }
+        struct node* del=head;
+        head=head->link;
+        temp->link=head;
+    }
     temp=head;
     do{
         printf("%d\t",temp->data);
         temp=temp->link;
     }while(temp != head);
 
+    //Take Home Question 02 1st
+    struct node* n2=(struct node*)malloc(sizeof(struct node));
+    printf("\nEnter the data for first node: ");
+    scanf("%d",&n2->data);
+    n2->link=head;
+
+    
+    temp=head;
+    while(temp->link != head){
+        temp=temp->link;
+    }
+    head=n2;
+    temp->link=head;
+
+    temp=head;
+    do{
+        printf("%d\t",temp->data);
+        temp=temp->link;
+    }while(temp != head);
+
+    //Take Home Question 02 2nd
+    printf("\n");
+    temp=head;
+    while(temp->link->link != head){
+        temp=temp->link;
+    }
+    temp->link=head;
+
+    temp=head;
+    do{
+        printf("%d\t",temp->data);
+        temp=temp->link;
+    }while(temp != head);
 }

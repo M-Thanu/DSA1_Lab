@@ -71,4 +71,20 @@ int main(){
     printf("\nMax: %d",max);
     printf("\nMin: %d",min);
 
+    printf("\n");
+
+    temp=head;
+    while(temp->next != NULL){
+        temp=temp->next;
+    }
+    temp->next=head;
+    head->prev=temp;
+
+    temp=head;
+    do{
+        printf("%d \t",temp->data);
+        temp=temp->next;
+    }
+    while(temp !=head);
+
 }
