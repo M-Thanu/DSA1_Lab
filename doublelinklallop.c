@@ -3,6 +3,7 @@
 
 struct Node {
     int data;
+    struct Node* prev;
     struct Node* next;
 };
 
@@ -12,7 +13,11 @@ struct Node* head = NULL;
 void addAtBeginning(int value) {
     struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
     newNode->data = value;
+    newNode->prev = NULL;
     newNode->next = head;
+
+    if (head != NULL)
+        head->prev = newNode;
     head = newNode;
 }
 
@@ -23,6 +28,7 @@ void addAtEnd(int value) {
     newNode->next = NULL;
 
     if (head == NULL) {
+        newNode->prev = NULL;
         head = newNode;
         return;
     }
@@ -30,31 +36,39 @@ void addAtEnd(int value) {
     struct Node* temp = head;
     while (temp->next != NULL)
         temp = temp->next;
+
     temp->next = newNode;
+    newNode->prev = temp;
 }
 
 // Add at specific position
 void addAtPosition(int value, int pos) {
-    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
-    newNode->data = value;
-
-    if (pos == 1) {
-        newNode->next = head;
-        head = newNode;
-        return;
-    }
-
-    struct Node* temp = head;
-    for (int i = 1; i < pos - 1 && temp != NULL; i++) {
-        temp = temp->next;
-    }
-
-    if (temp == NULL) {
+    if (pos <= 0) {
         printf("Invalid position.\n");
         return;
     }
 
+    if (pos == 1) {
+        addAtBeginning(value);
+        return;
+    }
+
+    struct Node* temp = head;
+    for (int i = 1; i < pos - 1 && temp != NULL; i++)
+        temp = temp->next;
+
+    if (temp == NULL) {
+        printf("Position out of range.\n");
+        return;
+    }
+
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = value;
     newNode->next = temp->next;
+    newNode->prev = temp;
+
+    if (temp->next != NULL)
+        temp->next->prev = newNode;
     temp->next = newNode;
 }
 
@@ -64,8 +78,11 @@ void deleteFirst() {
         printf("List is empty.\n");
         return;
     }
+
     struct Node* temp = head;
     head = head->next;
+    if (head != NULL)
+        head->prev = NULL;
     free(temp);
 }
 
@@ -75,80 +92,81 @@ void deleteLast() {
         printf("List is empty.\n");
         return;
     }
-    if (head->next == NULL) {
+
+    struct Node* temp = head;
+    if (temp->next == NULL) {
         free(head);
         head = NULL;
         return;
     }
 
-    struct Node* temp = head;
-    while (temp->next->next != NULL)
+    while (temp->next != NULL)
         temp = temp->next;
 
-    free(temp->next);
-    temp->next = NULL;
+    temp->prev->next = NULL;
+    free(temp);
 }
 
-// Delete at position
+// Delete at specific position
 void deleteAtPosition(int pos) {
-    if (head == NULL) {
-        printf("List is empty.\n");
+    if (head == NULL || pos <= 0) {
+        printf("Invalid operation.\n");
         return;
     }
 
     if (pos == 1) {
-        struct Node* temp = head;
-        head = head->next;
-        free(temp);
+        deleteFirst();
         return;
     }
 
     struct Node* temp = head;
-    for (int i = 1; i < pos - 1 && temp->next != NULL; i++) {
+    for (int i = 1; i < pos && temp != NULL; i++)
         temp = temp->next;
-    }
 
-    if (temp->next == NULL) {
-        printf("Invalid position.\n");
+    if (temp == NULL) {
+        printf("Position out of range.\n");
         return;
     }
 
-    struct Node* delNode = temp->next;
-    temp->next = delNode->next;
-    free(delNode);
+    if (temp->next != NULL)
+        temp->next->prev = temp->prev;
+    if (temp->prev != NULL)
+        temp->prev->next = temp->next;
+    free(temp);
 }
 
-// Reverse the list
-void reverse() {
-    struct Node* prev = NULL;
-    struct Node* curr = head;
-    struct Node* next = NULL;
+// Reverse list
+void reverseList() {
+    struct Node* temp = NULL;
+    struct Node* current = head;
 
-    while (curr != NULL) {
-        next = curr->next;
-        curr->next = prev;
-        prev = curr;
-        curr = next;
+    while (current != NULL) {
+        temp = current->prev;
+        current->prev = current->next;
+        current->next = temp;
+        current = current->prev;
     }
 
-    head = prev;
+    if (temp != NULL)
+        head = temp->prev;
 }
 
 // Display list
 void display() {
     struct Node* temp = head;
-    printf("Linked List: ");
+    printf("Doubly Linked List: ");
     while (temp != NULL) {
-        printf("%d -> ", temp->data);
+        printf("%d <-> ", temp->data);
         temp = temp->next;
     }
     printf("NULL\n");
 }
 
-// 10. Search element
+// Search element
 void search(int key) {
     struct Node* temp = head;
     int pos = 1;
+
     while (temp != NULL) {
         if (temp->data == key) {
             printf("Element %d found at position %d\n", key, pos);
@@ -160,15 +178,15 @@ void search(int key) {
     printf("Element %d not found in the list.\n", key);
 }
 
-// Main function with menu
+// Main function
 int main() {
-    int choice, value, position;
+    int choice, value, pos;
 
     while (1) {
         printf("\nMenu:\n");
         printf("1. Add at beginning\n2. Add at end\n3. Add at position\n");
-        printf("4. Delete first node\n5. Delete last node\n6. Delete at position\n");
-        printf("7. Reverse list\n8. Exit\n9. Display list\n10. Search element\n");
+        printf("4. Delete first\n5. Delete last\n6. Delete at position\n");
+        printf("7. Reverse\n8. Exit\n9. Display\n10. Search\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
@@ -185,8 +203,8 @@ int main() {
                 break;
             case 3:
                 printf("Enter value and position: ");
-                scanf("%d %d", &value, &position);
-                addAtPosition(value, position);
+                scanf("%d %d", &value, &pos);
+                addAtPosition(value, pos);
                 break;
             case 4:
                 deleteFirst();
@@ -196,11 +214,11 @@ int main() {
                 break;
             case 6:
                 printf("Enter position: ");
-                scanf("%d", &position);
-                deleteAtPosition(position);
+                scanf("%d", &pos);
+                deleteAtPosition(pos);
                 break;
             case 7:
-                reverse();
+                reverseList();
                 break;
             case 8:
                 exit(0);
@@ -208,12 +226,12 @@ int main() {
                 display();
                 break;
             case 10:
-                printf("Enter element to search: ");
+                printf("Enter value to search: ");
                 scanf("%d", &value);
                 search(value);
                 break;
             default:
-                printf("Invalid choice!\n");
+                printf("Invalid choice.\n");
         }
     }
 
