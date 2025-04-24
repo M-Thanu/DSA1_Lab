@@ -151,6 +151,10 @@ void search(int key){
 }
 
 void reverse(){
+    if(head==NULL){
+        printf("\nList is Empty");
+        return;
+    }
 
 }
 
