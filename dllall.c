@@ -155,6 +155,24 @@ void reverse(){
         printf("\nList is Empty");
         return;
     }
+    temp=head;
+    while(temp->next!=NULL){
+        temp=temp->next;
+    }
+    struct node*t;
+    while(temp!=NULL){
+        t=temp->prev;
+        temp->prev=temp->next;
+        temp->next=t;
+        temp=temp->next;
+    }
+    temp=head;
+    while(temp->prev!=NULL){
+        temp=temp->prev;
+    }
+    head=temp;
+
+    display();
 
 }
 
